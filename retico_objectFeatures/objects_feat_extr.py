@@ -43,7 +43,7 @@ class ObjectFeaturesExtractor(retico_core.AbstractModule):
         Returns a `pipeline("image-feature-extraction")` that accepts a PIL image and
         gives you either pooled global embeddings (`pool=True`) or the raw
         last-layer hidden states (`pool=False`, default).
-        Works for CLIP, ResNet-50, ViT, Swin, etc.
+        Works for CLIP, EfficientNet, ResNet-50, ViT, Swin, etc.
         """
         cfg = AutoConfig.from_pretrained(ckpt, trust_remote_code=True)
 
