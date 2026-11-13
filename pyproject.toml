@@ -1,0 +1,43 @@
+[build-system]
+requires = ["setuptools>=80", "setuptools-scm[simple]>=8"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "retico-objectfeatures"
+dynamic = ["version"]
+dependencies = [
+    "retico-core>=2.0.0",
+    "retico-vision",
+    "torch>=1.9.0",
+    "transformers>=4.20.0",
+    "Pillow",
+]
+requires-python = ">=3.8, <4"
+authors = [
+    {name = "Davide Cavicchini"},
+]
+description = "A ReTiCo module for extracting visual features from detected objects using CLIP and other vision models."
+readme = "README.md"
+license = { file = "LICENSE" }
+keywords = [
+    "retico",
+    "framework",
+    "incremental",
+    "real-time",
+    "dialogue",
+    "computer vision",
+    "object detection",
+    "clip",
+    "feature extraction",
+]
+classifiers = [
+    "Development Status :: 2 - Pre-Alpha",
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: Apache Software License",
+]
+
+[project.urls]
+Repository = "https://github.com/retico-team/retico-objectFeatures"
+
+[tool.setuptools_scm]
+version_file = "retico_objectfeatures/version.py"

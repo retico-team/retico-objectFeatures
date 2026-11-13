@@ -10,47 +10,60 @@ modules like [YOLO](https://github.com/retico-team/retico-yolo.git) or [SAM](htt
 It uses state-of-the-art vision models including CLIP, EfficientNet, ResNet, ViT, and other transformers compatible 
 models to generate meaningful feature representations from extracted objects.
 
-## Installation
+## Installation and Requirements
 
-### Step 1: Install retico dependencies
-First, ensure you have the `retico-core` and `retico-vision` modules installed.
-The `retico-vision` module needs to be installed and added to your Python path:
-```bash
-git clone https://github.com/retico-team/retico-vision.git
-```
-**Important**: Make sure to add the path to the `retico-vision` and `retico-core` libraries to your `PYTHONPATH` 
-environment variable. This is required for the module to properly import the vision components.
+To use the object features module you first need to install the retico-objectfeatures package:
+* Install retico-objectfeatures:
+```pip install retico-objectfeatures```
 
-### Step 2: Install the package
+  or, for the latest development version from GitHub:
+```pip install git+https://github.com/retico-team/retico-objectFeatures.git```
 
-```bash
-pip install git+https://github.com/retico-team/retico-objectFeatures.git
-```
+## Modules
 
-## Usage
-For a basic example of how to use the `retico-objectFeatures` module, refer to the `example.py` file in the repository. 
-Note that you will also need to install the `retico-yolo` module to provide the object detection capabilities.
+### `ObjectFeaturesExtractor`
+Subscribes to `ExtractedObjectsIU` and outputs `ObjectFeaturesIU`. For each of the first `top_objects` extracted objects, the object's image is passed through the vision model, and its pooled features are flattened into a 1D list. The features are stored in the IU's `object_features`, a dictionary from the object's index to its features. The model is loaded when the module starts running.
 
-## Configuration
+#### Arguments:
+* `model_name` (str): the Hugging Face model to extract features with; defaults to `"openai/clip-vit-base-patch32"`
+* `top_objects` (int): the number of objects to extract features from; defaults to `1`
+* `timeout` (float): how long in seconds to wait before checking for new input again; defaults to `0.5`
 
-### ObjectFeaturesExtractor Parameters
+### Example
+**Note:** The example uses `WebcamModule` and `ExtractObjectsModule` from [retico-vision](https://github.com/retico-team/retico-vision), `DebugModule` from `retico_core` and `ObjectDetectionModule` from [retico-yolo](https://github.com/retico-team/retico-yolo) (`pip install git+https://github.com/retico-team/retico-yolo.git`).
 
-- `model_name` (str): HuggingFace model identifier (default: "openai/clip-vit-base-patch32")
-- `top_objects` (int): Number of top objects to extract features from (default: 1)
-- `pool` (bool): Whether to use pooled features or raw hidden states (default: True). Note that the features are flattened to a 1D vector.
+```python
+from retico_core.debug import DebugModule
+from retico_vision.vision import WebcamModule, ExtractObjectsModule
+from retico_yolo import ObjectDetectionModule
+from retico_objectfeatures import ObjectFeaturesExtractor
 
-### Project Structure
 
-```
-retico-objectFeatures/
-├── retico_objectFeatures/
-│   ├── __init__.py
-│   ├── objects_feat_extr.py    # Main feature extraction module
-│   └── version.py              # Version information
-├── setup.py                    # Package setup
-├── example.py                  # Example usage script
-├── README.md                   # This file
-└── LICENSE                     # License file
+webcam = WebcamModule()
+yolo = ObjectDetectionModule()
+extractor = ExtractObjectsModule(num_obj_to_display=5)
+feats = ObjectFeaturesExtractor(top_objects=5)
+debug = DebugModule()
+
+webcam.subscribe(yolo)
+yolo.subscribe(extractor)
+extractor.subscribe(feats)
+feats.subscribe(debug)
+
+webcam.run()
+yolo.run()
+extractor.run()
+feats.run()
+debug.run()
+
+print("Network is running")
+input()
+
+webcam.stop()
+yolo.stop()
+extractor.stop()
+feats.stop()
+debug.stop()
 ```
 
 ## Related Projects
